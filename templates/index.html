@@ -77,6 +77,11 @@
             color: #fff;
         }
 
+        .bets button.green {
+            background-color: green;
+            color: #fff;
+        }
+
         .bets button.gold {
             background-color: gold;
             color: #333;
@@ -127,15 +132,15 @@
             <div class="ball"></div>
         </div>
         <div class="bets">
-            <input type="number" id="betAmount" placeholder="Сумма ставки">
+            <input class="green" type="number" id="betAmount" placeholder="Сумма ставки">
             <button class="red" onclick="makeBet('red')">Красное</button>
             <button class="black" onclick="makeBet('black')">Черное</button>
-            <button onclick="makeBet('green')">Зеленое</button>
-            <input type="number" id="betNumber" placeholder="Номер">
+            <button class="green" onclick="makeBet('green')">Зеленое</button>
+            <input class="green" type="number" id="betNumber" placeholder="Номер">
             <button class="gold" onclick="makeBet(document.getElementById('betNumber').value)">Ставка на номер</button>
         </div>
         <div class="bets">
-            <button onclick="setToMin()">min</button>
+            <button class="green" onclick="setToMin()">min</button>
             <button class="black" onclick="multiplyBet(2)">x2</button>
             <button class="red" onclick="multiplyBet(3)">x3</button>
             <button class="blue" onclick="multiplyBet(5)">x5</button>
@@ -144,7 +149,7 @@
             <button class="red" onclick="addAmount(300)">+300</button>
             <button class="blue" onclick="addAmount(500)">+500</button>
             <button class="gold" onclick="addAmount(1000)">+1000</button>
-            <button onclick="setToMax()">max</button>
+            <button class="green" onclick="setToMax()">max</button>
         </div>
         <p id="balance">Баланс: {{ balance }}$</p>
         <div class="statistics">
