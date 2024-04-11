@@ -1,0 +1,78 @@
+#history {
+    margin-top: 50px; /* Отступ сверху 50px от кнопки "Paper" */
+    text-align: center; /* Выравниваем текст по центру */
+}
+/* Стили для текста в истории игр */
+.history-item {
+    color: white; /* Белый цвет текста по умолчанию */
+}
+
+.history-item.win {
+    color: green; /* Зеленый цвет для побед */
+}
+
+.history-item.loss {
+    color: red; /* Красный цвет для поражений */
+}
+
+.history-item.tie {
+    color: orange; /* Оранжевый цвет для ничьих */
+}
+/* Стили для победных сообщений */
+.history-item.win {
+    color: #28a745; /* Зеленый цвет для побед */
+}
+
+/* Стили для проигрышных сообщений */
+.history-item.loss {
+    color: #dc3545; /* Красный цвет для поражений */
+}
+
+/* Стили для ничьих */
+.history-item.tie {
+    color: #ffc107; /* Желтый цвет для ничьих */
+}
+
+
+#history li {
+    list-style-type: none; /* Убираем маркеры списка */
+    margin-bottom: 10px; /* Отступ между элементами */
+}
+
+
+button {
+    margin: 10px;
+    padding: 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #333;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+}
+
+img {
+    width: 100px;
+    height: 100px;
+}
+
+body {
+    color: #fff;
+    background-color: #333; /* Изменяем цвет фона на темно-серый */
+    display: flex;
+    flex-direction: column; /* Меняем направление основной оси на вертикальное */
+    justify-content: center; /* Выравниваем содержимое по центру вертикально */
+    align-items: center; /* Выравниваем содержимое по центру горизонтально */
+    min-height: 100vh; /* Гарантируем, что контейнер занимает всю высоту видимой области */
+    margin: 0; /* Убираем отступы по умолчанию */
+    padding: 0; /* Убираем отступы по умолчанию */
+}
+
+.container {
+    text-align: center; /* Выравниваем содержимое контейнера по центру */
+    max-width: 600px; /* Максимальная ширина контейнера */
+    padding: 20px; /* Внутренние отступы контейнера */
+}
+
