@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Рулетка</title>
     <style>
         body {
@@ -19,22 +21,20 @@
             height: 100vh;
         }
 
-        .roulette {
-            width: 500px;
-            height: 500px;
-            background-image: url("https://sun6-23.userapi.com/s/v1/ig2/u2y0kWTz0RloSJDWS8iVZaRtJ8GrE2sSuuT1ilAY8ZOQihskWnElo359UOCg5ya-irbWntYQgFxBNw87cky0lN5H.jpg?size=2560x2560&quality=95&crop=0,0,2560,2560&ava=1");
-            background-size: cover;
-            position: relative;
-            border-radius: 50%;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        @media (max-width: 600px) {
+            .roulette {
+                width: 100%;
+            }
         }
 
         .ball {
+
+            position: relative;
             width: 30px;
             height: 30px;
             background-color: red;
             border-radius: 50%;
-            position: relative;
+            position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -42,8 +42,8 @@
         }
 
         @keyframes spin {
-            0% { transform: translate(-50%, -50%) rotate(0deg); }
-            100% { transform: translate(-50%, -50%) rotate(360deg); }
+            from { transform: translate(-50%, -50%) rotate(0deg); }
+            to { transform: translate(-50%, -50%) rotate(360deg); }
         }
 
         .bets {
@@ -72,11 +72,6 @@
             color: #fff;
         }
 
-        .bets button.blue {
-            background-color: blue;
-            color: #fff;
-        }
-
         .bets button.green {
             background-color: green;
             color: #fff;
@@ -85,6 +80,11 @@
         .bets button.gold {
             background-color: gold;
             color: #333;
+        }
+
+        .bets button.blue {
+            background-color: blue;
+            color: #003153;
         }
 
         #balance {
