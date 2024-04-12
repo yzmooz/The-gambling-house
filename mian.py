@@ -1,72 +1,71 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, session
 import random
+import os
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Генерация безопасного случайного ключа
 
-balance = 10000  # Для демонстрации, в реальном приложении используйте БД или сессии
-big_wins = []  # История больших выигрышей
-bet_history = []  # История последних 10 ставок
 
 @app.route('/')
 def index():
-    return render_template('index.html', balance=balance, big_wins=big_wins, bet_history=bet_history)
+    # Инициализация баланса и истории, если они еще не установлены
+    if 'balance' not in session:
+        session['balance'] = 10000
+    if 'big_wins' not in session:
+        session['big_wins'] = []
+    if 'bet_history' not in session:
+        session['bet_history'] = []
+
+    return render_template('index.html', balance=session['balance'], big_wins=session['big_wins'],
+                           bet_history=session['bet_history'])
 
 
 @app.route('/bet', methods=['POST'])
 def place_bet():
-    """Обрабатывает ставки пользователя"""
-    global balance, big_wins, bet_history
     bet = request.form.get('bet')
     amount = int(request.form.get('amount', 0))
 
-    if amount > balance:
+    if amount > session.get('balance', 0):
         return jsonify({'result': 'error', 'message': 'Недостаточно средств на балансе'})
 
     win = check_bet(bet, amount)
-    balance += win
 
-    # Добавляем в историю ставок
-    bet_history.insert(0, {'bet': bet, 'amount': amount, 'win': win})
-    if len(bet_history) > 10:
-        bet_history.pop(-1)  # Удаляем самую старую ставку, если их больше 10
+    session['bet_history'].insert(0, {'bet': bet, 'amount': amount, 'win': win})
+    if len(session['bet_history']) > 10:
+        session['bet_history'].pop()  # Удаление самой старой ставки
 
-    # Добавляем в историю больших выигрышей, если выигрыш больше 1000
-    if win > 1000:
-        big_wins.insert(0, f'Выигрыш {win}$ ({bet.capitalize()})')
-        if len(big_wins) > 10:
-            big_wins.pop()  # Удаляем самый старый выигрыш, если их больше 10
-    return jsonify({'result': 'success', 'win': win, 'balance': balance})
+    if win > 5000:
+        session['big_wins'].insert(0, f'Выигрыш {win}$ ({bet.capitalize()})')
+        if len(session['big_wins']) > 10:
+            session['big_wins'].pop()
+
+    session.modified = True  # Убедитесь, что сессия будет сохранена после изменений
+
+    return jsonify({
+        'result': 'success',
+        'win': win,
+        'balance': session['balance'],
+        'bet_history': session['bet_history'],
+        'big_wins': session['big_wins']
+    })
+
 
 def check_bet(bet, amount):
-    """Проверяет ставку и возвращает выигрыш или проигрыш"""
-    global balance
     win_numbers = {
         'red': [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
         'black': [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35],
         'green': [0]
     }
     win_number = random.randint(0, 36)
-    if bet in ['red', 'black']:
-        if win_number in win_numbers[bet]:
-            balance += 2 * amount
-            return 2 * amount
-        else:
-            balance -= amount
-            return 0
-    elif bet == 'green':
-        if win_number in win_numbers[bet]:
-            balance += 35 * amount
-            return 35 * amount
-        else:
-            balance -= amount
-            return 0
-    elif win_number == int(bet):
-        balance += 35 * amount
-        return 35 * amount
+    if bet in win_numbers and win_number in win_numbers[bet]:
+        multiplier = 2 if bet in ['red', 'black'] else 35
+        win_amount = multiplier * amount
+        session['balance'] += win_amount - amount
+        return win_amount
     else:
-        balance -= amount
+        session['balance'] -= amount
         return 0
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
