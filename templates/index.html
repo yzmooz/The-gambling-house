@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Рулетка</title>
     <style>
@@ -21,29 +23,38 @@
             height: 100vh;
         }
 
-        @media (max-width: 600px) {
-            .roulette {
-                width: 100%;
+        .roulette {
+            position: relative;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            background-color: #f2f2f2;
+            /* Псевдоэлемент для красного треугольника сверху колеса рулетки */
+            ::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                border-left: 15px solid transparent; /* Левая граница треугольника прозрачная */
+                border-right: 15px solid transparent; /* Правая граница треугольника прозрачная */
+                border-top: 8px solid gold; /* Верхняя граница треугольника золотая */
             }
         }
 
         .ball {
-
-            position: relative;
-            width: 30px;
-            height: 30px;
-            background-color: red;
-            border-radius: 50%;
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            animation: spin 5s linear infinite;
         }
 
-        @keyframes spin {
-            from { transform: translate(-50%, -50%) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotate(360deg); }
+        .ball img {
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            /* Устанавливаем точку вращения в центр изображения */
+            transform-origin: center center;
         }
 
         .bets {
@@ -53,7 +64,8 @@
             justify-content: center;
         }
 
-        .bets button, .bets input {
+        .bets button,
+        .bets input {
             margin: 10px;
             padding: 10px 20px;
             border: none;
@@ -123,13 +135,16 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="big-wins">
             <span id="big-wins-container"></span>
         </div>
         <div class="roulette">
-            <div class="ball"></div>
+            <div class="ball">
+                <img src="/static/images/roulette_normal.png" alt="Ball Image">
+            </div>
         </div>
         <div class="bets">
             <input class="green" type="number" id="betAmount" placeholder="Сумма ставки">
@@ -164,6 +179,7 @@
 
     <script>
         let balance = {{ balance }};
+        let isSpinning = false;
 
         function makeBet(bet) {
             let amountElement = document.getElementById('betAmount');
@@ -181,26 +197,62 @@
             balance -= amount;
             updateBalance();
 
-            fetch('/bet', {
-                method: 'POST',
-                body: new URLSearchParams({
-                    bet: bet,
-                    amount: amount
+            if (!isSpinning) {
+                isSpinning = true;
+                fetch('/bet', {
+                    method: 'POST',
+                    body: new URLSearchParams({
+                        bet: bet,
+                        amount: amount
+                    })
                 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    balance += data.win;
-                    updateBalance();
-                    updateHistory(data.bet_history, data.big_wins);
-                } else {
-                    alert(data.message);
-                }
-            })
-            .catch(error => {
-                console.error('Ошибка при размещении ставки:', error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        balance += data.win;
+                        updateBalance();
+                        updateHistory(data.bet_history, data.big_wins);
+
+                        // Запускаем вращение шарика с углом из Python кода
+                        let rotation_angle = data.rotation_angle;
+                        spinBall(rotation_angle);
+                    } else {
+                        alert(data.message);
+                    }
+                    isSpinning = false;
+                })
+                .catch(error => {
+                    console.error('Ошибка при размещении ставки:', error);
+                    isSpinning = false;
+                });
+            }
+        }
+
+        function spinBall(rotation_angle) {
+            let ballImg = document.querySelector('.ball img');
+            let currentTransform = window.getComputedStyle(ballImg).getPropertyValue('transform');
+
+            // Парсим текущее значение угла поворота шарика
+            let currentRotation = 0;
+            if (currentTransform !== 'none') {
+                let matrixValues = currentTransform.split('(')[1].split(')')[0].split(',');
+                let a = parseFloat(matrixValues[0]);
+                let b = parseFloat(matrixValues[1]);
+                currentRotation = Math.atan2(b, a) * (180 / Math.PI);
+            }
+
+            let duration = 5000; // Длительность анимации (в миллисекундах)
+
+            // Рассчитываем конечный угол поворота и запускаем анимацию
+            let finalRotation = -1 * currentRotation + rotation_angle;
+            ballImg.style.transition = `transform ${duration}ms linear`;
+            ballImg.style.transform = `rotate(${-1 * rotation_angle}deg)`;
+
+            // Убираем анимацию после ее завершения
+            setTimeout(() => {
+                ballImg.style.transition = 'none';
+                isSpinning = false;
+            }, duration);
         }
 
         function multiplyBet(factor) {
@@ -251,4 +303,5 @@
         }
     </script>
 </body>
+
 </html>
