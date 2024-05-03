@@ -3,7 +3,7 @@ import random
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getlogin()
+app.secret_key = os.getlogin() + '1'
 
 # Инициализация глобальных переменных
 previous_win_number = 0
@@ -105,6 +105,12 @@ def check_bet(bet, amount):
         session['balance'] += win_amount - amount
         return win_amount, win_number
 
+    elif bet.isdigit() and int(bet) == win_number:
+        print("Type of bet:", type(bet))
+        multiplier = 35
+        win_amount = multiplier * amount
+        session['balance'] += win_amount - amount
+        return win_amount, win_number
     else:
         session['balance'] -= amount
         return 0, win_number
