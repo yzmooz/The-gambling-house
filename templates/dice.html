@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: auto;
+            opacity: 0.9;
+            z-index: -1;
+        }
+
+        .corner-image {
+            position: absolute;
+            width: 10%;
+            height: auto;
+            opacity: 0.9;
+            z-index: -1;
+        }
+
+        .corner-image.top-left {
+            top: 5%;
+            left: 5%;
+        }
+
+        .corner-image.top-right {
+            top: 5%;
+            right: 5%;
+        }
+
+        .corner-image.bottom-left {
+            bottom: 5%;
+            left: 5%;
+        }
+
+        .corner-image.bottom-right {
+            bottom: 5%;
+            right: 5%;
+        }
+
+        .corner-image.middle-left {
+            top: 50%;
+            left: 5%;
+            transform: translateY(-50%);
+        }
+
+        .corner-image.middle-right {
+            top: 50%;
+            right: 5%;
+            transform: translateY(-50%);
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #333;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            background-color: #444;
+            position: relative;
+            z-index: 1;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 15px;
+            border-radius: 5px;
+            background: linear-gradient(to right, green 0%, green var(--value, 50%), red var(--value, 50%), red 100%);
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+            margin-top: 20px; /* Add extra margin here */
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        #playButton {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #playButton:hover {
+            background-color: #0056b3;
+        }
+
+        .balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+        }
+
+        .message {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        .history {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .history-item {
+            padding: 5px;
+            border-radius: 5px;
+        }
+
+        .history-item.win {
+            background-color: green;
+        }
+
+        .history-item.lose {
+            background-color: red;
+        }
+
+        .pointer {
+            position: absolute;
+            top: 75px; /* Adjusted to move up 20px */
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 20px solid #fff; /* Arrow pointing down */
+            z-index: 2;
+            transition: left 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="balance">Баланс: <span id="balance">{{ balance }}</span>$</div>
+    <div class="container">
+        <input type="number" id="betAmount" placeholder="Введите вашу ставку" min="0">
+        <input type="range" id="chanceSlider" min="1" max="99" value="50">
+        <div>Шанс: <span id="chanceValue">50</span>% | Коэффициент: <span id="multiplierValue">2.00</span></div>
+        <div class="pointer" id="pointer"></div>
+        <button id="playButton">Играть</button>
+        <div class="message" id="message"></div>
+        <div class="history">
+            <h3>История последних 10 ставок</h3>
+            <div id="betHistory"></div>
+        </div>
+    </div>
+    <img src="/static/images/dice.png" alt="Background Image" class="background-image">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image top-left">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image top-right">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image bottom-left">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image bottom-right">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image middle-left">
+    <img src="/static/images/dice.png" alt="Corner Image" class="corner-image middle-right">
+    <script>
+        document.getElementById('chanceSlider').addEventListener('input', function() {
+            let value = this.value;
+            document.getElementById('chanceValue').textContent = value;
+            this.style.setProperty('--value', value + '%');
+
+            let multiplier = (100 / value).toFixed(2);
+            document.getElementById('multiplierValue').textContent = multiplier;
+        });
+
+        document.getElementById('playButton').addEventListener('click', function() {
+            let bet = parseFloat(document.getElementById('betAmount').value);
+            let chance = parseFloat(document.getElementById('chanceSlider').value);
+            if (isNaN(bet) || bet <= 0) {
+                alert('Введите корректную сумму ставки');
+                return;
+            }
+            fetch('/bet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ bet: bet, chance: chance })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'error') {
+                    alert(data.message);
+                    return;
+                }
+                document.getElementById('balance').textContent = data.balance.toFixed(2);
+                let message = document.getElementById('message');
+                message.textContent = data.message;
+                message.style.color = data.win ? 'green' : 'red';
+
+                let pointer = document.getElementById('pointer');
+                let slider = document.getElementById('chanceSlider');
+                let maxRange = slider.max;
+                let percentage = data.outcome / maxRange * 100;
+                pointer.style.left = `calc(${percentage}% - 10px)`;
+
+                let betHistory = document.getElementById('betHistory');
+                betHistory.innerHTML = '';
+                data.bet_history.forEach(bet => {
+                    let div = document.createElement('div');
+                    div.className = `history-item ${bet.win ? 'win' : 'lose'}`;
+                    div.textContent = `${bet.message} - Ставка: ${bet.bet}, Шанс: ${bet.chance}%`;
+                    betHistory.appendChild(div);
+                });
+            })
+            .catch(error => console.error('Ошибка:', error));
+        });
+    </script>
+</body>
+</html>
