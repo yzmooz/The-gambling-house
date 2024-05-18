@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Игры</title>
+    <style>
+        body {
+            background-color: #333;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .navbar {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #444;
+            padding: 20px 20px;
+            border-radius: 5px;
+        }
+
+        .logobar img {
+            position: absolute;
+            height: 250px;
+            left: 20px;
+            top: 20px;
+        }
+
+        button, a {
+            background-color: #fff;
+            color: #333;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            margin: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+
+        button:hover, a:hover {
+            background-color: #555;
+            color: #fff;
+        }
+
+        .games {
+            margin-top: 50px;
+        }
+
+        .game-image {
+            margin-top: 20px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="logobar">
+        <img src="static/images/The Gambling House LOGOPNG.png" alt="Логотип">
+    </div>
+
+    <div class="navbar">
+        <div>
+            {% if username %}
+            <span>Баланс: {{ balance }}</span>
+            <a href="/deposit">Пополнить баланс</a>
+            <a href="/logout">Выйти</a>
+            {% else %}
+            <a href="/login">Войти</a>
+            <a href="/register">Регистрация</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="games">
+        {% if username %}
+        <h1>Выберите игру</h1>
+        <div>
+            <button
+                onmouseover="document.getElementById('game-image').src='/static/images/roulette_normal.png'"
+                onmouseout="document.getElementById('game-image').src=''"
+                onclick="window.location.href='/roulette'"
+            >
+                Рулетка
+            </button>
+
+            <button
+                onmouseover="document.getElementById('game-image').src='static/images/Rock Paper Scissors.png'"
+                onmouseout="document.getElementById('game-image').src=''"
+                onclick="window.location.href='/rock-paper-scissors'"
+            >
+                Камень, ножницы, бумага
+            </button>
+
+            <button
+                onmouseover="document.getElementById('game-image').src='static/images/dice.png'"
+                onmouseout="document.getElementById('game-image').src=''"
+                onclick="window.location.href='/dice'"
+            >
+                Игра в кости
+            </button>
+        </div>
+        <img id="game-image" src="" alt="" class="game-image">
+        {% else %}
+        <h1>Чтобы играть войдите или зарегистрируйтесь</h1>
+        {% endif %}
+    </div>
+</body>
+</html>
