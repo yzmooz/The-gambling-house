@@ -3,7 +3,7 @@ import random
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getlogin() + '1'
+app.secret_key = os.getlogin()
 
 # Инициализация глобальных переменных
 previous_win_number = 0
@@ -50,8 +50,7 @@ def place_bet():
     session['bet_history'].insert(0, {'bet': bet, 'amount': amount, 'win': win})
     if len(session['bet_history']) > 10:
         session['bet_history'].pop()  # Удаляем старую ставку, если их более 10
-    print(win_number)
-    print(rotation_angle)
+
     # Проверяем крупные выигрыши
     if win > 5000:
         session['big_wins'].insert(0, f'Выигрыш {win}$ ({bet.capitalize()})')
@@ -89,7 +88,7 @@ def calculate_angle(num2):
     if angle <= 0:
         angle += 360
 
-    return angle
+    return angle + 360
 
 
 def check_bet(bet, amount):
@@ -117,4 +116,4 @@ def check_bet(bet, amount):
 
 
 if __name__ == '__main__':
-    app.run(port=1488)
+    app.run(port=2000)
