@@ -1,9 +1,10 @@
-from flask import Flask, render_template, redirect, url_for, request, session, flash
+from flask import Flask, render_template, redirect, url_for, request, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+from config import secret_key
 import csv
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'  # Обеспечьте безопасность вашего приложения, используя секретный ключ
+app.secret_key = secret_key  # Обеспечивает безопасность приложения, используя секретный ключ
 
 # Файл для хранения данных пользователей
 USER_DATA_FILE = 'users.csv'
@@ -42,17 +43,17 @@ def index():
 
 @app.route('/roulette')
 def roulette():
-    return redirect('http://localhost:2000')
+    return redirect('http://127.0.0.1:2000')
 
 
 @app.route('/rock-paper-scissors')
 def rock_paper_scissors():
-    return redirect('http://localhost:3000')
+    return redirect('http://127.0.0.1:3000')
 
 
 @app.route('/dice')
 def dice():
-    return redirect('http://localhost:4000')
+    return redirect('http://127.0.0.1:4000')
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -125,6 +126,24 @@ def deposit():
 
     balance = user_data[username]['balance']
     return render_template('deposit.html', username=username, balance=balance)
+
+
+@app.route('/api/get_balance')
+def get_balance():
+    username = session['username']
+    user_data = read_user_data()
+    balance = user_data.get(username, {}).get('balance', 0)
+    return jsonify({'balance': balance})
+
+
+@app.route('/api/update_balance', methods=['POST'])
+def update_balance():
+    username = session['username']
+    user_data = read_user_data()
+    new_balance = request.json.get('balance')
+    user_data[username]['balance'] = new_balance
+    write_user_data(user_data)
+    return jsonify({'status': 'success'})
 
 
 if __name__ == '__main__':
