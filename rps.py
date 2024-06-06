@@ -1,35 +1,23 @@
-from flask import Flask, render_template, request, jsonify, session
-from datetime import datetime, timedelta
+from flask import Flask, render_template, request, jsonify
 from config import secret_key
 import random
 import requests
 
 app = Flask(__name__)
 app.secret_key = secret_key
-
 MAIN_SERVER_URL = 'http://localhost:1000'
 
 
 def get_user_balance():
-    if 'balance' in session and 'balance_timestamp' in session:
-        if datetime.now() - session['balance_timestamp'] < timedelta(seconds=10):
-            return session['balance']
-
     response = requests.get(f'{MAIN_SERVER_URL}/api/get_balance', cookies=request.cookies)
     if response.status_code == 200:
-        session['balance'] = response.json().get('balance', 0)
-        session['balance_timestamp'] = datetime.now()
-        return session['balance']
+        return response.json().get('balance', 0)
     return None
 
 
 def update_user_balance(new_balance):
     response = requests.post(f'{MAIN_SERVER_URL}/api/update_balance', json={'balance': new_balance}, cookies=request.cookies)
-    if response.status_code == 200:
-        session['balance'] = new_balance
-        session['balance_timestamp'] = datetime.now()
-        return True
-    return False
+    return response.status_code == 200
 
 
 @app.route('/')
