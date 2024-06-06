@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mines Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #121212;
+            color: white;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .controls {
+            margin: 20px;
+            background-color: #1E1E1E;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            width: 250px;
+        }
+
+        .controls label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .controls input, .controls button {
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 5px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .controls button {
+            background-color: #1DB954;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-gap: 10px;
+            margin-top: 20px;
+        }
+
+        .cell {
+            width: 60px;
+            height: 60px;
+            background-color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2em;
+        }
+
+        .cell.revealed {
+            background-color: #1DB954;
+            color: #333;
+            cursor: not-allowed; /* Prevent clicking on revealed cells */
+        }
+
+        .cell.mine {
+            background-color: red;
+        }
+
+        .history {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .history th, .history td {
+            border: 1px solid #333;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .history th {
+            background-color: #1E1E1E;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .message.success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .message.failure {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .controls .balance {
+            font-size: 1.5em;
+            color: #1DB954;
+            margin-bottom: 20px;
+        }
+
+        .controls .bet-buttons, .controls .bomb-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .controls .bet-buttons button, .controls .bomb-buttons button {
+            flex: 1 1 22%;
+            margin: 2px;
+            background-color: #444;
+            color: white;
+            border: none;
+            padding: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .controls .bet-buttons button:hover, .controls .bomb-buttons button:hover {
+            background-color: #1DB954;
+            color: #121212;
+        }
+
+        .controls .play-button, .controls .cashout-button {
+            margin-top: 20px;
+            background-color: #1DB954;
+            color: #121212;
+            text-align: center;
+            padding: 10px;
+            font-size: 1em;
+        }
+
+        .controls .play-button:hover, .controls .cashout-button:hover {
+            background-color: #1ED760;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <p class="balance">Баланс: <span id="balance">{{ balance }}</span> RUB</p>
+            <form method="POST" action="{{ url_for('play') }}" id="game-form">
+                <label for="bet">Сумма ставки (RUB):</label>
+                <input type="number" step="0.01" name="bet" id="bet" min="0.01" required>
+                <div class="bet-buttons">
+                    <button type="button" data-value="0.1">+0.1</button>
+                    <button type="button" data-value="0.5">+0.5</button>
+                    <button type="button" data-value="1">+1</button>
+                    <button type="button" data-value="2">+2</button>
+                    <button type="button" data-value="5">+5</button>
+                    <button type="button" data-value="%">%</button>
+                    <button type="button" data-value="/2">/2</button>
+                    <button type="button" data-value="*2">X2</button>
+                </div>
+                <label for="num_mines">Количество мин:</label>
+                <input type="number" name="num_mines" id="num_mines" min="2" max="24" required>
+                <div class="bomb-buttons">
+                    <button type="button" data-value="3">3</button>
+                    <button type="button" data-value="5">5</button>
+                    <button type="button" data-value="10">10</button>
+                    <button type="button" data-value="24">24</button>
+                    <button type="button" data-value="custom">Изменить</button>
+                </div>
+                <button type="submit" class="play-button" id="play-button">Играть</button>
+            </form>
+            <div id="message" class="message"></div>
+        </div>
+        <div>
+            <div class="board">
+                {% for row in range(5) %}
+                    {% for col in range(5) %}
+                        <button class="cell hidden" data-row="{{ row }}" data-col="{{ col }}">
+                            {{ '' if board[row][col] == '' else '' }}
+                        </button>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            <hr>
+            <p>Текущий множитель: <span id="current_multiplier">{{ current_multiplier }}</span></p>
+            <hr>
+            <h2>История игр</h2>
+            <table class="history">
+                <thead>
+                    <tr>
+                        <th>Результат</th>
+                        <th>Ставка</th>
+                        <th>Выигрыш</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    {% for entry in history %}
+                        <tr>
+                            <td>{{ entry.result }}</td>
+                            <td>{{ entry.bet }}</td>
+                            <td>{{ entry.win }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var gameActive = false;
+
+            function updateCashoutButton() {
+                var bet = parseFloat($('#bet').val());
+                var multiplier = parseFloat($('#current_multiplier').text());
+                var payout = (bet * multiplier).toFixed(2);
+                $('#play-button').text('Забрать ' + payout + ' RUB');
+                $('#play-button').removeClass('play-button').addClass('cashout-button');
+            }
+
+            function resetPlayButton() {
+                $('#play-button').text('Играть');
+                $('#play-button').removeClass('cashout-button').addClass('play-button');
+                gameActive = false;
+            }
+
+            function updateHistory(history) {
+                var historyBody = $('#history-body');
+                historyBody.empty();
+                history.forEach(function(entry) {
+                    var row = $('<tr></tr>');
+                    row.append($('<td></td>').text(entry.result));
+                    row.append($('<td></td>').text(parseFloat(entry.bet).toFixed(2)));
+                    row.append($('<td></td>').text(parseFloat(entry.win).toFixed(2)));
+                    historyBody.prepend(row); // Adding rows at the beginning
+                });
+            }
+
+            $('#game-form').submit(function(event) {
+                event.preventDefault();
+                if (!gameActive) {
+                    startGame();
+                } else {
+                    cashout();
+                }
+            });
+
+            function startGame() {
+                $.post('/play', $('#game-form').serialize(), function(data) {
+                    if (data.success) {
+                        $('#play-button').text('Забрать ' + $('#bet').val() + ' RUB');
+                        updateCashoutButton();
+                        $('.cell').removeClass('revealed mine').addClass('hidden');
+                        $('#balance').text(data.balance.toFixed(2));
+                        $('#current_multiplier').text(data.current_multiplier.toFixed(2));
+                        $('#message').removeClass('success failure').text('');
+                        updateHistory(data.history);
+
+                        // Initialize the board based on the new data
+                        $('.cell').each(function() {
+                            var row = $(this).data('row');
+                            var col = $(this).data('col');
+                            if (data.board[row][col] === 'M') {
+                                $(this).data('mine', true); // Mark the cell as a mine
+                            } else {
+                                $(this).data('mine', false);
+                            }
+                        });
+
+                        // Enable cell clicks
+                        $('.cell').on('click', cellClickHandler);
+                        gameActive = true;
+                    } else {
+                        $('#message').addClass('failure').text(data.message);
+                    }
+                });
+            }
+
+            function cellClickHandler(event) {
+                event.preventDefault();
+                var row = $(this).data('row');
+                var col = $(this).data('col');
+                var cell = $(this);
+
+                if (cell.hasClass('revealed') || cell.hasClass('mine')) {
+                    return; // Don't allow clicking on already revealed cells
+                }
+
+                $.post('/reveal/' + row + '/' + col, function(data) {
+                    if (data.result === "mine") {
+                        cell.addClass('mine');
+                        $('#message').addClass('failure').text("Игра окончена! Вы наткнулись на мину.");
+                        $('.cell').off('click');
+                        resetPlayButton();
+                        $('#current_multiplier').text("1.00");
+                        updateHistory(data.history);
+                    } else {
+                        cell.removeClass('hidden').addClass('revealed');
+                        $('#current_multiplier').text(parseFloat(data.current_multiplier).toFixed(2));
+                        updateCashoutButton();
+                    }
+                }).fail(function(xhr, status, error) {
+                    console.error('Request failed:', status, error);
+                    alert("Произошла ошибка при обработке запроса. Попробуйте снова.");
+                });
+            }
+
+            function cashout() {
+                $.post('/cashout', function(data) {
+                    if (data.success) {
+                        $('#balance').text(data.balance.toFixed(2));
+                        $('#message').addClass('success').text(data.message);
+                        $('.cell').off('click'); // Disable further clicks
+                        $('#current_multiplier').text("1.00");
+                        resetPlayButton();
+                        updateHistory(data.history);
+                    } else {
+                        $('#message').addClass('failure').text('Ошибка при попытке забрать выигрыш.');
+                    }
+                });
+            }
+
+            $('.bet-buttons button').click(function() {
+                var betInput = $('#bet');
+                var value = parseFloat(betInput.val()) || 0;
+                var action = $(this).data('value');
+
+                switch (action) {
+                    case 0.1:
+                        value += 0.1;
+                        break;
+                    case 0.5:
+                        value += 0.5;
+                        break;
+                    case 1:
+                        value += 1;
+                        break;
+                    case 2:
+                        value += 2;
+                        break;
+                    case 5:
+                        value += 5;
+                        break;
+                    case '%':
+                        value = value * 1.1;
+                        break;
+                    case '/2':
+                        value = value / 2;
+                        break;
+                    case '*2':
+                        value = value * 2;
+                        break;
+                }
+
+                if (value > parseFloat($('#balance').text())) {
+                    value = parseFloat($('#balance').text());  // Ensure the bet doesn't exceed the balance
+                }
+
+                betInput.val(value.toFixed(2));
+            });
+
+            $('.bomb-buttons button').click(function() {
+                var bombs = $(this).data('value');
+                if (bombs === 'custom') {
+                    $('#num_mines').focus();
+                } else {
+                    $('#num_mines').val(bombs);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
