@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <style>
+        body {
+            color: #fff;
+            background-color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #333;
+        }
+
+        button img {
+            width: 100px;
+            height: 100px;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #balance {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #ff0;
+        }
+
+        #history {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .history-item {
+            color: white;
+        }
+
+        .history-item.win {
+            color: green;
+        }
+
+        .history-item.loss {
+            color: red;
+        }
+
+        .history-item.tie {
+            color: gray;
+        }
+
+        #history li {
+            list-style-type: none;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rock Paper Scissors</h1>
+    <div id="balance">Баланс: $<span id="balance-amount">{{ balance }}</span></div>
+    <div>
+        <label for="bet-amount">Введите ставку: $</label>
+        <input type="number" id="bet-amount" value="10" min="1" max="{{ balance }}">
+    </div>
+    <div id="game">
+        <button onclick="play('rock')"><img src="/static/images/rock.png" alt="Rock"></button>
+        <button onclick="play('paper')"><img src="/static/images/paper.png" alt="Paper"></button>
+        <button onclick="play('scissors')"><img src="/static/images/scissors.png" alt="Scissors"></button>
+    </div>
+    <div id="result"></div>
+    <div id="error" style="color: red; margin-top: 10px;"></div>
+    <h2>История игр</h2>
+    <ul id="history"></ul>
+    <script>
+        var gameHistory = [];
+
+        function play(playerChoice) {
+            var betAmount = document.getElementById('bet-amount').value;
+            fetch('/play', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `player_choice=${playerChoice}&bet_amount=${betAmount}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('error').textContent = data.error;
+                    return;
+                }
+                document.getElementById('error').textContent = '';
+                document.getElementById('result').innerHTML = `Вы выбрали ${playerChoice}.<br>Компьютер выбрал ${data.computer_choice}.<br>${data.result}`;
+                document.getElementById('balance-amount').textContent = data.balance;
+                addHistoryItem(playerChoice, data.computer_choice, data.result, data.result_class, data.amount);
+                document.getElementById('bet-amount').max = data.balance;
+            });
+        }
+
+        function addHistoryItem(player, computer, result, resultClass, amount) {
+            var historyList = document.getElementById('history');
+            var listItem = document.createElement('li');
+            listItem.className = 'history-item ' + resultClass;
+            listItem.textContent = `Игрок: ${player}, Компьютер: ${computer}, Результат: ${result} (Изменение: ${amount > 0 ? '+' : ''}${amount}$)`;
+            gameHistory.unshift(listItem);
+            if (gameHistory.length > 10) {
+                gameHistory.pop();
+            }
+            historyList.innerHTML = '';
+            gameHistory.forEach(item => historyList.appendChild(item));
+        }
+    </script>
+</body>
+</html>
