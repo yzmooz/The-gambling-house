@@ -23,23 +23,103 @@
             height: 100vh;
         }
 
+        .field_container {
+            display: grid;
+            grid-template-columns: repeat(13, 40px);
+            grid-template-rows: repeat(3, 40px);
+            gap: 1px;
+            position: relative;
+            top: 25%;
+            left: 175%;
+            transform: translateX(-50%);
+            width: 532px;
+            height: 123px;
+            background-color: #f2f2f2;
+        }
+
+        .field_green,
+        .field_black,
+        .field_red {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .field_green {
+            background-color: green;
+            grid-column: 1;
+            grid-row: 1 / span 3;
+            width: 40px;
+            height: 122px;
+            writing-mode: vertical-rl;
+            text-orientation: upright;
+        }
+
+        .field_black {
+            background-color: black;
+        }
+
+        .field_red {
+            background-color: red;
+        }
+
+        .bottom_container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 40px);
+            gap: 1px;
+            position: relative;
+            left: 179%;
+            transform: translateX(-50%);
+            width: 491px;
+            height: 122px;
+            background-color: #f2f2f2;
+            margin-top: 125px;
+        }
+
+        .bottom_cell {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            background-color: green;
+            cursor: pointer;
+        }
+
+        .bottom_cell.red {
+            background-color: red;
+        }
+
+        .bottom_cell.black {
+            background-color: black;
+        }
+
+        .bottom_cell.white {
+            color: black;
+        }
+
         .roulette {
             position: relative;
+            left: -12%;
             width: 500px;
             height: 500px;
             border-radius: 50%;
             background-color: #f2f2f2;
-            /* Псевдоэлемент для красного треугольника сверху колеса рулетки */
-            ::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                border-left: 15px solid transparent; /* Левая граница треугольника прозрачная */
-                border-right: 15px solid transparent; /* Правая граница треугольника прозрачная */
-                border-top: 8px solid gold; /* Верхняя граница треугольника золотая */
-            }
+        }
+
+        .pointer {
+            content: '';
+            position: absolute;
+            top: -55px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 10px solid gold;
         }
 
         .ball {
@@ -53,7 +133,6 @@
             width: 600px;
             height: 600px;
             border-radius: 50%;
-            /* Устанавливаем точку вращения в центр изображения */
             transform-origin: center center;
         }
 
@@ -74,29 +153,9 @@
             font-size: 16px;
         }
 
-        .bets button.red {
-            background-color: red;
-            color: #fff;
-        }
-
-        .bets button.black {
-            background-color: black;
-            color: #fff;
-        }
-
         .bets button.green {
             background-color: green;
             color: #fff;
-        }
-
-        .bets button.gold {
-            background-color: gold;
-            color: #333;
-        }
-
-        .bets button.blue {
-            background-color: blue;
-            color: #003153;
         }
 
         #balance {
@@ -142,43 +201,85 @@
             <span id="big-wins-container"></span>
         </div>
         <div class="roulette">
+            <div class="pointer"></div>
+            <div class="field_container" id="fieldContainer">
+                <div class="field_green" data-bet="0">0</div>
+                <div class="field_red" data-bet="3">3</div>
+                <div class="field_black" data-bet="6">6</div>
+                <div class="field_red" data-bet="9">9</div>
+                <div class="field_black" data-bet="12">12</div>
+                <div class="field_red" data-bet="15">15</div>
+                <div class="field_black" data-bet="18">18</div>
+                <div class="field_red" data-bet="21">21</div>
+                <div class="field_black" data-bet="24">24</div>
+                <div class="field_red" data-bet="27">27</div>
+                <div class="field_black" data-bet="30">30</div>
+                <div class="field_red" data-bet="33">33</div>
+                <div class="field_black" data-bet="36">36</div>
+                <div class="field_black" data-bet="2">2</div>
+                <div class="field_red" data-bet="5">5</div>
+                <div class="field_black" data-bet="8">8</div>
+                <div class="field_red" data-bet="11">11</div>
+                <div class="field_black" data-bet="14">14</div>
+                <div class="field_red" data-bet="17">17</div>
+                <div class="field_black" data-bet="20">20</div>
+                <div class="field_red" data-bet="23">23</div>
+                <div class="field_black" data-bet="26">26</div>
+                <div class="field_red" data-bet="29">29</div>
+                <div class="field_black" data-bet="32">32</div>
+                <div class="field_red" data-bet="35">35</div>
+                <div class="field_red" data-bet="1">1</div>
+                <div class="field_black" data-bet="4">4</div>
+                <div class="field_red" data-bet="7">7</div>
+                <div class="field_black" data-bet="10">10</div>
+                <div class="field_red" data-bet="13">13</div>
+                <div class="field_black" data-bet="16">16</div>
+                <div class="field_red" data-bet="19">19</div>
+                <div class="field_black" data-bet="22">22</div>
+                <div class="field_red" data-bet="25">25</div>
+                <div class="field_black" data-bet="28">28</div>
+                <div class="field_red" data-bet="31">31</div>
+                <div class="field_black" data-bet="34">34</div>
+            </div>
+            <div class="bottom_container" id="bottomContainer">
+                <div class="bottom_cell white" data-bet="1st 12">1st 12</div>
+                <div class="bottom_cell white" data-bet="2nd 12">2nd 12</div>
+                <div class="bottom_cell white" data-bet="3rd 12">3rd 12</div>
+                <div class="bottom_cell white" data-bet="1-18">1-18</div>
+                <div class="bottom_cell white" data-bet="EVEN">EVEN</div>
+                <div class="bottom_cell white" data-bet="19-36">19-36</div>
+                <div class="bottom_cell black" data-bet="BLACK">BLACK</div>
+                <div class="bottom_cell white" data-bet="ODD">ODD</div>
+                <div class="bottom_cell red" data-bet="RED">RED</div>
+            </div>
             <div class="ball">
-                <img src="/static/images/roulette_normal.png" alt="Ball Image">
+                <img src="/static/images/roulette_normal.png" alt="Рулетка">
             </div>
         </div>
         <div class="bets">
-            <input class="green" type="number" id="betAmount" placeholder="Сумма ставки">
-            <button class="red" onclick="makeBet('red')">Красное</button>
-            <button class="black" onclick="makeBet('black')">Черное</button>
-            <button class="green" onclick="makeBet('green')">Зеленое</button>
-            <input class="green" type="number" id="betNumber" placeholder="Номер">
-            <button class="gold" onclick="makeBet(document.getElementById('betNumber').value)">Ставка на номер</button>
+            <input type="number" id="betAmount" placeholder="Сумма ставки">
+            <button class="green" id="setToMax">Макс</button>
+            <button class="green" id="setToMin">Мин</button>
+            <button class="green" id="placeBet">Играть</button>
         </div>
-        <div class="bets">
-            <button class="green" onclick="setToMin()">min</button>
-            <button class="black" onclick="multiplyBet(2)">x2</button>
-            <button class="red" onclick="multiplyBet(3)">x3</button>
-            <button class="blue" onclick="multiplyBet(5)">x5</button>
-            <button class="gold" onclick="multiplyBet(10)">x10</button>
-            <button class="black" onclick="addAmount(100)">+100</button>
-            <button class="red" onclick="addAmount(300)">+300</button>
-            <button class="blue" onclick="addAmount(500)">+500</button>
-            <button class="gold" onclick="addAmount(1000)">+1000</button>
-            <button class="green" onclick="setToMax()">max</button>
+        <div id="balance">
+            Баланс: <span id="balance-amount"></span>
         </div>
-        <p id="balance">Баланс: {{ balance }}$</p>
         <div class="statistics">
             <div>
-                <h3>История последних 10 ставок</h3>
-                <ul id="bet-history">
-                    <!-- История ставок будет добавляться здесь динамически -->
-                </ul>
+                <h3>Последние результаты:</h3>
+                <ul id="last-results-list"></ul>
+            </div>
+            <div>
+                <h3>Ставки игрока:</h3>
+                <ul id="player-bets-list"></ul>
             </div>
         </div>
     </div>
 
     <script>
         let balance = {{ balance }};
+        let bets = {};
         let isSpinning = false;
 
         function makeBet(bet) {
@@ -194,16 +295,24 @@
                 return;
             }
 
+            if (bets[bet]) {
+                bets[bet] += amount;
+            } else {
+                bets[bet] = amount;
+            }
+
             balance -= amount;
             updateBalance();
+            updatePlayerBets();
+        }
 
+        function placeBet() {
             if (!isSpinning) {
                 isSpinning = true;
                 fetch('/bet', {
                     method: 'POST',
                     body: new URLSearchParams({
-                        bet: bet,
-                        amount: amount
+                        bets: JSON.stringify(bets)
                     })
                 })
                 .then(response => response.json())
@@ -213,13 +322,14 @@
                         updateBalance();
                         updateHistory(data.bet_history, data.big_wins);
 
-                        // Запускаем вращение шарика с углом из Python кода
                         let rotation_angle = data.rotation_angle;
                         spinBall(rotation_angle);
                     } else {
                         alert(data.message);
                     }
                     isSpinning = false;
+                    bets = {};
+                    updatePlayerBets();
                 })
                 .catch(error => {
                     console.error('Ошибка при размещении ставки:', error);
@@ -232,7 +342,6 @@
             let ballImg = document.querySelector('.ball img');
             let currentTransform = window.getComputedStyle(ballImg).getPropertyValue('transform');
 
-            // Парсим текущее значение угла поворота шарика
             let currentRotation = 0;
             if (currentTransform !== 'none') {
                 let matrixValues = currentTransform.split('(')[1].split(')')[0].split(',');
@@ -241,40 +350,15 @@
                 currentRotation = Math.atan2(b, a) * (180 / Math.PI);
             }
 
-            let duration = 5000; // Длительность анимации (в миллисекундах)
-
-            // Рассчитываем конечный угол поворота и запускаем анимацию
+            let duration = 5000;
             let finalRotation = -1 * currentRotation + rotation_angle;
             ballImg.style.transition = `transform ${duration}ms linear`;
             ballImg.style.transform = `rotate(${-1 * rotation_angle}deg)`;
 
-            // Убираем анимацию после ее завершения
             setTimeout(() => {
                 ballImg.style.transition = 'none';
                 isSpinning = false;
             }, duration);
-        }
-
-        function multiplyBet(factor) {
-            let amountElement = document.getElementById('betAmount');
-            let amount = amountElement.value ? parseInt(amountElement.value, 0) : 0;
-            amount *= factor;
-            amountElement.value = amount;
-        }
-
-        function addAmount(amountToAdd) {
-            let amountElement = document.getElementById('betAmount');
-            let currentAmount = amountElement.value ? parseInt(amountElement.value, 0) : 0;
-            let newAmount = currentAmount + amountToAdd;
-            amountElement.value = newAmount;
-        }
-
-        function setToMax() {
-            document.getElementById('betAmount').value = balance;
-        }
-
-        function setToMin() {
-            document.getElementById('betAmount').value = 10;
         }
 
         function updateBalance() {
@@ -282,18 +366,16 @@
         }
 
         function updateHistory(betHistory, bigWins) {
-            let betHistoryContainer = document.getElementById('bet-history');
+            let betHistoryContainer = document.getElementById('last-results-list');
             let bigWinsContainer = document.getElementById('big-wins-container');
 
-            // Обновление истории ставок
             betHistoryContainer.innerHTML = '';
             for (let bet of betHistory) {
                 let li = document.createElement('li');
-                li.textContent = `Ставка: ${bet.bet}, Сумма: ${bet.amount}, Выигрыш: ${bet.win}`;
+                li.textContent = `Ставка: ${bet.bets}, Сумма: ${bet.amount}, Выигрыш: ${bet.win}`;
                 betHistoryContainer.appendChild(li);
             }
 
-            // Обновление истории больших выигрышей
             bigWinsContainer.innerHTML = '';
             for (let win of bigWins) {
                 let span = document.createElement('span');
@@ -301,6 +383,46 @@
                 bigWinsContainer.appendChild(span);
             }
         }
+
+        function updatePlayerBets() {
+            let playerBetsContainer = document.getElementById('player-bets-list');
+            playerBetsContainer.innerHTML = '';
+            for (let bet in bets) {
+                let li = document.createElement('li');
+                li.textContent = `${bet}: ${bets[bet]}`;
+                playerBetsContainer.appendChild(li);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('fieldContainer').addEventListener('click', (event) => {
+                if (event.target.classList.contains('field_green') ||
+                    event.target.classList.contains('field_black') ||
+                    event.target.classList.contains('field_red')) {
+                    let bet = event.target.getAttribute('data-bet');
+                    makeBet(bet);
+                }
+            });
+
+            document.getElementById('bottomContainer').addEventListener('click', (event) => {
+                if (event.target.classList.contains('bottom_cell')) {
+                    let bet = event.target.getAttribute('data-bet');
+                    makeBet(bet);
+                }
+            });
+
+            document.getElementById('setToMax').addEventListener('click', () => {
+                document.getElementById('betAmount').value = balance;
+            });
+
+            document.getElementById('setToMin').addEventListener('click', () => {
+                document.getElementById('betAmount').value = 10;
+            });
+
+            document.getElementById('placeBet').addEventListener('click', placeBet);
+
+            updateBalance();
+        });
     </script>
 </body>
 
