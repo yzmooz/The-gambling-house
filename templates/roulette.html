@@ -15,6 +15,11 @@
             padding: 0;
         }
 
+        .reset_button {
+            background-color: green;
+            color: #fff;
+        }
+
         .container {
             display: flex;
             flex-direction: column;
@@ -261,6 +266,8 @@
             <button class="green" id="setToMax">Макс</button>
             <button class="green" id="setToMin">Мин</button>
             <button class="green" id="placeBet">Играть</button>
+            <button class="green" id="clearBet">Очистить</button>
+            <button class="green" id="repeatBet">Повторить</button>
         </div>
         <div id="balance">
             Баланс: <span id="balance-amount"></span>
@@ -280,6 +287,7 @@
     <script>
         let balance = {{ balance }};
         let bets = {};
+        let previousBets = {};
         let isSpinning = false;
 
         function makeBet(bet) {
@@ -309,6 +317,7 @@
         function placeBet() {
             if (!isSpinning) {
                 isSpinning = true;
+                previousBets = { ...bets }; // Сохранение текущих ставок перед вращением
                 fetch('/bet', {
                     method: 'POST',
                     body: new URLSearchParams({
@@ -336,6 +345,21 @@
                     isSpinning = false;
                 });
             }
+        }
+
+        function clearBet() {
+            balance += Object.values(bets).reduce((acc, val) => acc + val, 0);
+            bets = {};
+            updateBalance();
+            updatePlayerBets();
+        }
+
+        function repeatBet() {
+            clearBet();
+            bets = { ...previousBets };
+            balance -= Object.values(bets).reduce((acc, val) => acc + val, 0);
+            updateBalance();
+            updatePlayerBets();
         }
 
         function spinBall(rotation_angle) {
@@ -420,6 +444,8 @@
             });
 
             document.getElementById('placeBet').addEventListener('click', placeBet);
+            document.getElementById('clearBet').addEventListener('click', clearBet);
+            document.getElementById('repeatBet').addEventListener('click', repeatBet);
 
             updateBalance();
         });
