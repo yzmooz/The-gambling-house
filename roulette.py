@@ -63,7 +63,7 @@ def place_bet():
     win_number = random.randint(0, 36)
 
     for bet, amount in bets.items():
-        win, win_num = check_bet(bet, amount)
+        win = check_bet(win_number, bet, amount)
         total_win += win
         balance -= amount  # Списываем ставку со счета
 
@@ -84,7 +84,6 @@ def place_bet():
         if len(session['big_wins']) > 10:
             session['big_wins'].pop()
 
-    print(session['bet_history'])
     return jsonify({
         'result': 'success',
         'win': total_win,
@@ -113,52 +112,51 @@ def calculate_angle(num2):
     return angle + 360
 
 
-def check_bet(bet, amount):
+def check_bet(win_number, bet, amount):
     win_numbers = {
         'RED': [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
         'BLACK': [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35],
         'GREEN': [0]
     }
 
-    win_number = random.randint(0, 36)
     if bet in win_numbers and win_number in win_numbers[bet]:
         multiplier = 2 if bet in ['RED', 'BLACK'] else 35
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet.isdigit() and int(bet) == win_number:
         multiplier = 35
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "1st 12" and 1 <= win_number <= 12:
         multiplier = 3
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "2nd 12" and 13 <= win_number <= 24:
         multiplier = 3
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "3rd 12" and 25 <= win_number <= 36:
         multiplier = 3
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "1-18" and 1 <= win_number <= 18:
         multiplier = 2
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "19-36" and 19 <= win_number <= 36:
         multiplier = 2
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "EVEN" and win_number % 2 == 0 and win_number != 0:
         multiplier = 2
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     elif bet == "ODD" and win_number % 2 != 0:
         multiplier = 2
         win_amount = multiplier * amount
-        return win_amount, win_number
+        return win_amount
     else:
-        return 0, win_number
+        return 0
 
 
 if __name__ == '__main__':
