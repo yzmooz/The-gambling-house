@@ -90,19 +90,26 @@
             </button>
 
             <button
+                onmouseover="document.getElementById('game-image').src='static/images/dice.png'"
+                onmouseout="document.getElementById('game-image').src=''"
+                onclick="window.location.href='/dice'"
+            >
+                Игра в кости
+            </button>
+            <br>
+            <button
                 onmouseover="document.getElementById('game-image').src='static/images/Rock Paper Scissors.png'"
                 onmouseout="document.getElementById('game-image').src=''"
                 onclick="window.location.href='/rock-paper-scissors'"
             >
                 Камень, ножницы, бумага
             </button>
-
             <button
-                onmouseover="document.getElementById('game-image').src='static/images/dice.png'"
+                onmouseover="document.getElementById('game-image').src='static/images/mine.png'"
                 onmouseout="document.getElementById('game-image').src=''"
-                onclick="window.location.href='/dice'"
+                onclick="window.location.href='/mines'"
             >
-                Игра в кости
+                Мины
             </button>
         </div>
         <img id="game-image" src="" alt="" class="game-image">
