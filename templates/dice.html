@@ -177,9 +177,36 @@
             z-index: 2;
             transition: left 1s ease-in-out;
         }
+
+         /* Стили для раздела info */
+        #info {
+            position: absolute;
+            top: 20px;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        #info-container {
+            position: absolute;
+            top: 20px;
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: transparent;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
+<!-- Добавление раздела "info" -->
+    <div id="info">
+        info
+    </div>
+    <div id="info-container">
+        <h1>Цель игры в Dice — предсказать выпавший диапазон, который варьируется от 1 до 99, коэффициент при выпадении определенного процента равняется он 100 до 1.01 соответственно, например при диапазоне от 1 до 50 шанс победы 50% и коэффициент при выигрыше 2</h1>
+    </div>
     <div class="balance">Баланс: <span id="balance">{{ balance }}</span>$</div>
     <div class="container">
         <input type="number" id="betAmount" placeholder="Введите вашу ставку" min="0">
@@ -201,6 +228,14 @@
     <img src="/static/images/dice.png" alt="Corner Image" class="corner-image middle-left">
     <img src="/static/images/dice.png" alt="Corner Image" class="corner-image middle-right">
     <script>
+
+        // JavaScript для управления разделом "info"
+        document.getElementById('info').addEventListener('click', function () {
+            // Переключение видимости раздела "info-container"
+            var infoContainer = document.getElementById('info-container');
+            infoContainer.style.display = infoContainer.style.display === 'none' ? 'block' : 'none';
+        });
+
         document.getElementById('chanceSlider').addEventListener('input', function() {
             let value = this.value;
             document.getElementById('chanceValue').textContent = value;
