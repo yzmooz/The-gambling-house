@@ -155,9 +155,61 @@
         .controls .play-button:hover, .controls .cashout-button:hover {
             background-color: #1ED760;
         }
+
+         /* Стили для раздела info */
+        #info {
+            position: absolute;
+            top: 20px;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        #info-container {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #333;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
+    <!-- Добавление раздела "info" -->
+    <div id="info">
+        info
+    </div>
+    <div id="info-container">
+        Правила мини-игры "Mines"
+    <h1>Цель игры:</h1>
+    <h2>Открыть как можно больше ячеек на игровом поле, не попав на мину. Каждая открытая безопасная ячейка увеличивает ваш выигрыш в зависимости от текущего множителя.</h2>
+
+    <h1>Правила:</h1>
+
+    <h2>Начало игры:</h2>
+
+    <h3>Игрок выбирает сумму ставки и количество мин на игровом поле (от 2 до 24 мин).
+    Игровое поле состоит из сетки 5x5 ячеек.</h3>
+    <h2>Процесс игры:</h2>
+
+    <h3>Игрок начинает игру, делая ставку.
+    После ставки на игровом поле случайным образом размещаются мины.
+    Игрок начинает открывать ячейки по одной.</h3>
+    <h2>Открытие ячеек:</h2>
+
+    <h3>Если игрок открывает безопасную ячейку, количество открытых ячеек увеличивается, и множитель выигрыша растет.
+    Если игрок открывает ячейку с миной, игра заканчивается, и ставка теряется.</h3>
+    <h2>Множители выигрыша:</h2>
+
+    <h3>Множитель выигрыша зависит от количества открытых безопасных ячеек и количества мин на игровом поле. Например, для поля с 2 минами множитель растет по мере открытия безопасных ячеек.</h3>
+
+    <h2>Вывод средств:</h2>
+
+    <h3>В любой момент игры, до открытия мины, игрок может забрать выигрыш, нажав кнопку "Забрать".
+    Выигрыш рассчитывается как ставка, умноженная на текущий множитель.</h3>
+    </div>
     <div class="container">
         <div class="controls">
             <p class="balance">Баланс: <span id="balance">{{ balance }}</span> RUB</p>
@@ -224,6 +276,12 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // JavaScript для управления разделом "info"
+        document.getElementById('info').addEventListener('click', function () {
+            // Переключение видимости раздела "info-container"
+            var infoContainer = document.getElementById('info-container');
+            infoContainer.style.display = infoContainer.style.display === 'none' ? 'block' : 'none';
+        });
         $(document).ready(function() {
             var gameActive = false;
 
