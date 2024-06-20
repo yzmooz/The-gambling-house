@@ -72,9 +72,47 @@
             list-style-type: none;
             margin-bottom: 10px;
         }
+
+        /* Стили для раздела info */
+        #info {
+            position: absolute;
+            top: 20px;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        #info-container {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #333;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
+    <!-- Добавление раздела "info" -->
+    <div id="info">
+        info
+    </div>
+    <div id="info-container">
+        <h1>Цель игры:</h1>
+        <h2>    Победить противника, выбрав правильный объект, который побеждает объект, выбранный противником.</h2>
+
+        <h1>Правила:</h1>
+        <h2>
+            Игроки: Играют два игрока. Каждый игрок выбирает один из трех возможных объектов: камень, ножницы или бумага.
+        Выбор объекта: Выбор объекта происходит одновременно. Игроки либо показывают свои объекты рукой, либо выбирают их в приложении.
+        Определение победителя:
+        Камень побеждает ножницы (камень ломает ножницы).
+        Ножницы побеждают бумагу (ножницы режут бумагу).
+        Бумага побеждает камень (бумага накрывает камень).
+        Ничья: Если оба игрока выбирают один и тот же объект, объявляется ничья и игра начинается заново.
+        </h2>
+    </div>
     <h1>Rock Paper Scissors</h1>
     <div id="balance">Баланс: $<span id="balance-amount">{{ balance }}</span></div>
     <div>
@@ -91,6 +129,14 @@
     <h2>История игр</h2>
     <ul id="history"></ul>
     <script>
+
+        // JavaScript для управления разделом "info"
+        document.getElementById('info').addEventListener('click', function () {
+            // Переключение видимости раздела "info-container"
+            var infoContainer = document.getElementById('info-container');
+            infoContainer.style.display = infoContainer.style.display === 'none' ? 'block' : 'none';
+        });
+
         var gameHistory = [];
 
         function play(playerChoice) {
