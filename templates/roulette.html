@@ -197,10 +197,98 @@
             font-size: 18px;
             margin-bottom: 20px;
         }
+
+        /* Стили для раздела info */
+        #info {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            cursor: pointer;
+            color: blue;
+            text-decoration: underline;
+        }
+
+        #info-container {
+            display: none;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background-color: #333;
+            text-align: left;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 
 <body>
+    <!-- Добавление раздела "info" -->
+    <div id="info">
+        info
+    </div>
+    <div id="info-container">
+        <table class="wikitable plainrowheaders">
+<tbody><tr>
+<th>Название на английском
+</th>
+<th>Перевод на русский
+</th>
+<th>Описание
+</th>
+<th>Коэфициент при выигрыше
+</th></tr>
+<tr>
+<td>1-18 (Low, Manque) / 19-36 (High, Passe)
+</td>
+<td>Малые / Большие
+</td>
+<td>Ставка на выпадение числа в определённом промежутке
+</td>
+<td>2
+</td></tr>
+<tr>
+<td>Red / Black
+</td>
+<td>Красное / чёрное
+</td>
+<td>Ставка на выпадение поля конкретного цвета
+</td>
+<td>2
+</td></tr>
+<tr>
+<td>Even / Odd (<i>Pair ou Impair</i>)
+</td>
+<td>Чётное / нечётное
+</td>
+<td>Ставка на выпадение чётного или нечётного числа
+</td>
+<td>2
+</td></tr>
+<tr>
+<td>Dozens
+</td>
+<td>Дюжины
+</td>
+<td>Ставка на выпадение числа в промежутках 1-12 (первая дюжина, она же <i>1st 12</i> или P12); 13-24 (вторая дюжина, она же <i>2nd 12</i> или M12) или 25-36 (третья дюжина, она же <i>3rd 12</i> или D12)
+</td>
+<td>3
+</td></tr>
+<tr>
+<td>Numbers
+</td>
+<td>Числа
+</td>
+<td>Ставка на выпадение конкретного числа (например, 0-1-2-3-4-...-36). Фишка размещается в поле числа.
+</td>
+<td>35
+</td></tr>
+<tr>
+<th>
+    <br>
+    <br>Вы можете делать ставки на несколько исходов<br><br>
+    Ваши ставки будут динамически отображаться в правой-нижей части экрана<br><br>
+    С помощью соответствующих кнопок, вы можете повторить предыдующую или отчистить текующую ставку<br>
+</th></tr></tbody></table>
+    </div>
     <div class="container">
         <div class="big-wins">
             <span id="big-wins-container"></span>
@@ -285,6 +373,12 @@
     </div>
 
     <script>
+        // JavaScript для управления разделом "info"
+        document.getElementById('info').addEventListener('click', function () {
+            // Переключение видимости раздела "info-container"
+            var infoContainer = document.getElementById('info-container');
+            infoContainer.style.display = infoContainer.style.display === 'none' ? 'block' : 'none';
+        });
         let balance = {{ balance }};
         let bets = {};
         let previousBets = {};
