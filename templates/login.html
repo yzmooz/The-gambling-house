@@ -1,9 +1,28 @@
-<form method="POST">
-    <h1>Вход</h1>
-    <label for="username">Имя пользователя:</label>
-    <input type="text" name="username" required>
-    <label for="password">Пароль:</label>
-    <input type="password" name="password" required>
-    <button type="submit">Войти</button>
-</form>
-<p>Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Alert Example</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            let messages = {{ get_flashed_messages(with_categories=true) | tojson }};
+            messages.forEach(function(message) {
+                let category = message[0];
+                let text = message[1];
+                alert(text);
+            });
+        });
+    </script>
+</head>
+<body>
+    <form method="POST" action="{{ url_for('login') }}">
+        <h1>Вход</h1>
+        <label for="username">Имя пользователя:</label>
+        <input type="text" name="username" required>
+        <label for="password">Пароль:</label>
+        <input type="password" name="password" required>
+        <button type="submit">Войти</button>
+    </form>
+    <p>Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+</body>
+</html>
